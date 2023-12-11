@@ -1,6 +1,6 @@
-import manager from "./manager.js";
-import admin from "./admin.js";
-import customer from "./customer.js";
+import manager from "./manager/home.js";
+import admin from "./admin/home.js";
+import customer from "./customer/home.js";
 
 export default {
         template: `

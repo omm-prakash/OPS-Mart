@@ -1,8 +1,10 @@
 from flask import current_app as app, jsonify, request, render_template
 from flask_security import auth_required, roles_required, current_user
-from .models import db, User, Product, ProductUser
+from .models import db, User, Product, ProductUser, Role, Category
 from .sec import datastore
 from werkzeug.security import check_password_hash, generate_password_hash
+from flask_restful import marshal, fields
+
 
 @app.get('/')
 def home():
@@ -27,21 +29,6 @@ def user_login():
                 return jsonify({'token':user.get_auth_token(), 'email':user.email, 'role':user.roles[0].name})
         else:
                 return jsonify({'message': 'Error: Wrong password!!'}), 400
-
-# class User(db.Model, UserMixin):
-#         __tablename__='user'
-#         id = db.Column(db.Integer, primary_key=True)
-#         username = db.Column(db.String, unique=False)
-#         email = db.Column(db.String, unique=True, nullable=False)
-#         password = db.Column(db.String(255))
-#         active = db.Column(db.Boolean, default=True)
-#         fs_uniquifier = db.Column(db.String(255), unique=True, nullable=False)
-#         roles = db.relationship('Role', 
-#                                 secondary='roles_users',
-#                                 backref=db.backref('users', lazy='dynamic'))
-#         products = db.relationship('Product', 
-#                                    secondary='products_users',
-#                                    backref=db.backref('users', lazy='dynamic'))
         
 @app.post('/user-register')
 def user_register():
@@ -81,11 +68,28 @@ def user_register():
         user = datastore.find_user(email=email)
         return jsonify({'token':user.get_auth_token(), 'email':user.email, 'role':user.roles[0].name})
 
-@app.get('/admin')
+user_fields = {
+    'id': fields.Integer,
+    'username': fields.String,
+    'email': fields.String,
+    'active': fields.Boolean,
+}
+
+@app.get('/profile1')
+@auth_required('token')
+# @roles_required('admin')
+def profile1():
+        print(current_user)
+        return marshal(current_user, user_fields)
+
+
+@app.get('/get/admin')
 @auth_required('token')
 @roles_required('admin')
 def admin():
-        return "welcome admin from OPS"
+        admin = User.query.filter(User.roles.any(Role.name == 'admin')).first()
+        # print(current_user.roles)
+        return marshal(admin, user_fields)
 
 @app.get('/activate/manager/<int:manager_id>')
 @auth_required('token')
@@ -99,7 +103,76 @@ def activate_manager(manager_id):
         
         manager.active = True
         db.session.commit()
-        return jsonify({'message': 'Success: Manager activated!!'})
+        return jsonify({'message': f'Success: Manager {manager.username} activated!!'})
+
+@app.get('/deactivate/manager/<int:manager_id>')
+@auth_required('token')
+@roles_required('admin')
+def deactivate_manager(manager_id):
+        manager = User.query.get(manager_id)
+        if not manager:
+                return jsonify({'message': 'Error: Manager not found!!'}), 404
+        if 'manager' not in manager.roles:
+                return jsonify({'message': 'Error: User is not a manager!!'}), 404
+        
+        manager.active = False
+        db.session.commit()
+        return jsonify({'message': f'Success: Manager {manager.username} deactivated!!'})
+
+@app.get('/drop/user/<int:user_id>')
+@auth_required('token')
+@roles_required('admin')
+def drop_user(user_id):
+        user = User.query.get(user_id)
+        if not user:
+                return jsonify({'message': 'Error: User not found!!'}), 404
+        db.session.delete(user)
+        db.session.commit()
+        return jsonify({'message': f'Success: User {user.username} removed!!'})
+
+
+@app.get('/get/managers')
+@auth_required('token')
+@roles_required('admin')
+def get_managers():
+        managers = User.query.filter(User.roles.any(Role.name == 'manager')).all()
+        if len(managers)==0:
+                return jsonify({'message': 'Error: No manager found!!'}), 404
+        return marshal(managers, user_fields)
+
+@app.get('/get/customers')
+@auth_required('token')
+@roles_required('admin')
+def get_customers():
+        customers = User.query.filter(User.roles.any(Role.name == 'customer')).all()
+        if len(customers)==0:
+                return jsonify({'message': 'Error: No customer found!!'}), 404
+        return marshal(customers, user_fields)
+
+@app.get('/activate/category/<int:id>')
+@auth_required('token')
+@roles_required('admin')
+def activate_category(id):
+        category = Category.query.get(id)
+        if not category:
+                return jsonify({'message': 'Error: Category not found!!'}), 404
+        
+        category.active = True
+        db.session.commit()
+        return jsonify({'message': f'Success: Category {category.name} activated!!'})
+
+@app.get('/deactivate/category/<int:id>')
+@auth_required('token')
+@roles_required('admin')
+def deactivate_category(id):
+        category = Category.query.get(id)
+        if not category:
+                return jsonify({'message': 'Error: Category not found!!'}), 404
+        
+        category.active = False
+        db.session.commit()
+        return jsonify({'message': f'Success: Category {category.name} deactivated!!'})
+
 
 @app.get('/cart/add/<int:product_id>/<float:quantity>')
 @auth_required('token')
@@ -111,8 +184,8 @@ def add_to_cart(product_id, quantity):
                 return jsonify({'message': 'Error: Invalide product ID!!'}), 404
         products = Product.query.all()
         product_ids = list(map(lambda x: x.id,products))
-        if args['id'] not in ids:
-                return jsonify({'message': 'Error: Product does not exists!!'}), 404
+        # if args['id'] not in ids:
+        #         return jsonify({'message': 'Error: Product does not exists!!'}), 404
         
         product = Product.query.get(product_id)
         if product.stock<=0:

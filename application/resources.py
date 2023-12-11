@@ -1,9 +1,9 @@
-from flask_restful import Resource, Api, reqparse, fields, marshal_with
+from flask_restful import Resource, Api, reqparse, fields, marshal
 from flask_security import auth_required, roles_required, current_user
 from .utils import *
 # from .validation import *
 from .models import db, Category, Product, User
-from flask import abort, jsonify
+from flask import abort, jsonify, make_response
 
 api = Api(prefix='/api')
 
@@ -45,48 +45,55 @@ class User(Resource):
 
 
 parser = reqparse.RequestParser()
-parser.add_argument('id', type=int, help="Error: ID is required and should be in integer format and distinct", required=True)
-parser.add_argument('name', type=str, help="Error: Name is required and should be in string format", required=True)
-parser.add_argument('description', type=str, help="Description should be in string format", default=None)
+def category_parser(required=True):
+        parser.add_argument('id', type=int, help="Error: ID is required and should be in integer format and distinct", required=required)
+        parser.add_argument('name', type=str, help="Error: Name is required and should be in string format", required=True)
+        parser.add_argument('description', type=str, help="Description should be in string format", default=None)
+        return parser
 
 category_fields = {
         'id': fields.Integer,
         'name': fields.String,
         'description': fields.String,
+        'active': fields.Boolean,
+        'edit_request': fields.Integer,
+        'delete_request': fields.Integer,
 }
 class CategoryResource(Resource):
-        @marshal_with(category_fields)
+        @auth_required('token')
+        @roles_required('admin')
         def get(self, id):
                 try:
                         if id==0:
                                 categories = Category.query.all()
-                                return categories
+                                # print(categories)
+                                return marshal(categories,category_fields)
                         elif id==1:
                                 category = Category.query.get(id)
                                 return category
                         else:
                                 category = Category.query.get(id)
                                 if category:
-                                        return category
+                                        return marshal(categories,category_fields)
                                 else:
-                                        # return abort(500, description='Category does not exist!!')
-                                        # raise NotFoundError('asdaas', 400)
-                                        return {'message': 'Error: Category does not exist!!'}, 404
+                                        return jsonify({'message': 'Error: Category does not exist!!'}), 404
                 except:
-                        raise abort(500, description='Error: Unknown error occure!!')
+                        return jsonify({'message': 'Error: Unknown error occure!!'}), 500
         
         @auth_required('token')
         @roles_required('admin')
         def post(self):
+                parser = category_parser(False)
                 args = parser.parse_args()
+                print(args)
                 message = ''
                 categories = Category.query.all()
-                ids = list(map(lambda x: x.id,categories)) 
+                # ids = list(map(lambda x: x.id,categories)) 
                 names = list(map(lambda x: x.name,categories))
-                if args['id']==1:
-                        return jsonify({'message': 'Error: New global category can not be build!!'}), 405
-                if args['id'] in ids:
-                        return jsonify({'message': 'Error: Category already exists!!'}), 404
+                # if args['id']==1:
+                #         return jsonify({'message': 'Error: New global category can not be build!!'}), 405
+                # if args['id'] in ids:
+                #         return jsonify({'message': 'Error: Category already exists!!'}), 404
                 if args['name'] in names:
                         return jsonify({'message': 'Error: Category name already exists!!'}), 404
                 if args['name'] is None or args['name']=='':
@@ -98,50 +105,56 @@ class CategoryResource(Resource):
                         category = Category(**args)
                         db.session.add(category)
                         db.session.commit()
-                        return jsonify({'message': f'Success: New Category {category.name} created!!'+message}), 201
+                        return make_response(jsonify({'message': f'Success: New Category {category.name} created!!'+message}), 201)
                 except:
-                        return jsonify({'message': 'Error: Unknown category commit error'}), 500
+                        return make_response(jsonify({'message': 'Error: Unknown category commit error'}), 500)
         
         @auth_required('token')
         @roles_required('admin')
         def delete(self,id):
                 categories = Category.query.all()
                 ids = list(map(lambda x: x.id,categories)) 
+                
                 if id==1:
-                        return jsonify({'message': 'Error: Global category can not be deleted!!'}), 405
+                        return make_response(jsonify({'message': 'Error: Global category can not be deleted!!'}), 405)
                 if id not in ids:
-                        return jsonify({'message': 'Error: Category does not exists!!'}), 404
+                        return make_response(jsonify({'message': 'Error: Category does not exists!!'}), 404)
                 try:
                         category = Category.query.get(id)
                         db.session.delete(category)
                         db.session.commit()
-                        return jsonify({'message': f'Success: Category {category.name} deleted!!'}), 201
-                except Exception as e:
-                        return jsonify({'message': 'Error: Unknown category commit error'}), 404
+                        return make_response(jsonify({'message': f'Success: Category {category.name} deleted!!'}), 201)
+                except:
+                        return make_response(jsonify({'message': 'Error: Unknown category commit error'}), 404)
         
         @auth_required('token')
         @roles_required('admin')
         def put(self):
+                parser = category_parser(True)
                 args = parser.parse_args()
                 message = ''
                 categories = Category.query.all()
+                category = Category.query.get(args['id'])
                 ids = list(map(lambda x: x.id,categories)) 
+                print(args)
                 if args['id']==1:
-                        return jsonify({'message': 'Error: Global category can not be updated!!'}), 405
+                        return make_response(jsonify({'message': 'Error: Global category can not be updated!!'}), 405)
                 if args['id'] not in ids:
-                        return jsonify({'message': 'Error: Category does not exists!!'}), 404
+                        return make_response(jsonify({'message': 'Error: Category does not exists!!'}), 404)
                 if args['name'] is None or args['name']=='':
                         message += ', Warning: Please add category name!!'
+                if args['name'] != category.name and args['name'] in list(map(lambda x: x.name,categories)):
+                        return make_response(jsonify({'message': 'Error: Category name already exists!!'}), 404)
                 if args['description'] is None or args['description']=='':
                         message += ', Warning: Please add category description!!'
                 try:
-                        category = Category.query.get(args['id'])
+                        
                         category.name = args['name']
                         category.description = args['description']
                         db.session.commit()
-                        return jsonify({'message': 'Success: Category updated!!'+message}), 201
+                        return make_response(jsonify({'message': f'Success: Category {args["name"]} updated!!'+message}), 201)
                 except:
-                        return jsonify({'message': 'Error: Unknown category commit error'}), 500
+                        return make_response(jsonify({'message': 'Error: Unknown category commit error'}), 500)
 
 def product_parser(required=True):
         parser = reqparse.RequestParser()
@@ -171,12 +184,12 @@ product_fields = {
         'manager_id': fields.Integer,
 }
 class ProductResource(Resource):
-        @marshal_with(product_fields)
+
         def get(self, id):
                 try:
                         if id==0:
                                 products = Product.query.all()
-                                return products
+                                return marshal(products,product_fields)
                         elif id==1:
                                 product = Product.query.get(id)
                                 # print(getattr(product,'id'))
@@ -184,7 +197,7 @@ class ProductResource(Resource):
                         else:
                                 product = Product.query.get(id)
                                 if product:
-                                        return product
+                                        return marshal(product,product_fields)
                                 else:
                                         return jsonify({'message': 'Error: Product does not exist!!'}), 404
                 except:
@@ -243,7 +256,7 @@ class ProductResource(Resource):
                         return jsonify({'message': f'Success: New produst {product.name} created!!'+message}), 201
                 except Exception as e:
                         # return {'message': e},500
-                        print(e)
+                        # print(e)
                         return jsonify({'message': 'Error: Unknown category commit error'}), 500
         
         @auth_required('token')
@@ -323,6 +336,6 @@ class ProductResource(Resource):
                 except:
                         return jsonify({'message': 'Error: Unknown prduct commit error'}), 500
 
-api.add_resource(User, '/user', '/category/<int:id>')
+api.add_resource(User, '/user')
 api.add_resource(CategoryResource, '/category', '/category/<int:id>')
 api.add_resource(ProductResource, '/product', '/product/<int:id>')

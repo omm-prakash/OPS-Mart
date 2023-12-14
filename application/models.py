@@ -54,9 +54,10 @@ class ProductUser(db.Model):
         id = db.Column(db.Integer, primary_key=True)
         user_id = db.Column(db.Integer,db.ForeignKey('user.id'))
         product_id = db.Column(db.Integer,db.ForeignKey('product.id'))
-        rating = db.Column(db.Integer, default=None)
+        # rating = db.Column(db.Integer, default=None)
         quantity = db.Column(db.Float, default=0)
         commit = db.Column(db.Boolean, default=False)
+        transaction_date = db.Column(db.DateTime, default=None)
 
 class Category(db.Model):
         __tablename__='category'
@@ -66,6 +67,8 @@ class Category(db.Model):
         active = db.Column(db.Boolean, default=True)
         edit_request = db.Column(db.Integer, default=0)
         delete_request = db.Column(db.Integer, default=0)
+        creator_id = db.Column(db.Integer, db.ForeignKey('user.id'), default=1)
+        creator = db.relationship('User', backref=db.backref('categories'))
 
 class Product(db.Model):
         __tablename__='product'
@@ -77,8 +80,9 @@ class Product(db.Model):
 
         manufacture_date = db.Column(db.DateTime)
         expiry_date = db.Column(db.DateTime)
+        onboard_date = db.Column(db.DateTime)     
 
-        rating = db.Column(db.Integer)
+        # rating = db.Column(db.Integer)
         # realation with category
         category_id = db.Column(db.Integer, db.ForeignKey('category.id'), default=1)
         category = db.relationship('Category', backref=db.backref('products')) # Category.query.get(category_id)

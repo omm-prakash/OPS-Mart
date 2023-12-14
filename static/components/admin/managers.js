@@ -5,7 +5,7 @@ export default {
                 <h2>Managers</h2>
                 <small v-if="error" class="text-danger"> *{{ error }} </small>
                 <hr>
-                <table class="table table-striped p-5">
+                <table class="table table-striped p-5 table-hover ">
                         <thead>
                                 <tr>
                                         <th scope="col">ID</th>
@@ -21,13 +21,13 @@ export default {
                                         <td>{{ manager.username }}</td>
                                         <td>{{ manager.email }}</td>
                                         <td v-if="manager.active" class="text-center">
-                                                <button type="button" class="btn btn-outline-danger" @click="deactivate(manager.id)">Deactivate</button>
+                                                <button type="button" class="btn btn-outline-danger" @click="deactivate(manager.id)"><i class="bi bi-person-dash"></i></button>
                                         </td>
                                         <td v-else class="text-center">
-                                                <button type="button" class="btn btn-outline-success" @click="activate(manager.id)"> Activate </button>
+                                                <button type="button" class="btn btn-outline-success" @click="activate(manager.id)"><i class="bi bi-person-check"></i></button>
                                         </td>
                                         <td class="text-center">
-                                                <button type="button" class="btn btn-danger" @click="remove(manager.id)">Delete</button>
+                                                <button type="button" class="btn btn-danger" @click="remove(manager.id)"><i class="bi bi-trash3-fill"></i></button>
                                         </td>
                                 </tr>
                         </tbody>
@@ -66,12 +66,13 @@ export default {
                         const data = await res.json().catch((e)=>{})
                         if(res.ok){
                                 alert(data.message);
-                                this.$router.push({path: '/admin/managers'} )
+                                this.$router.go(0);
                         }else{
                                 this.error = res.statusText;
                         }
                 },
                 async deactivate(id){
+                        console.log(id)
                         const res = await fetch(`/deactivate/manager/${id}`, {
                                 headers: {
                                         "Authentication-Token": this.token
@@ -80,6 +81,7 @@ export default {
                         const data = await res.json().catch((e)=>{})
                         if(res.ok){
                                 alert(data.message);
+                                this.$router.go(0);
                         }else{
                                 this.error = res.statusText;
                         }
@@ -93,6 +95,7 @@ export default {
                         const data = await res.json().catch((e)=>{})
                         if(res.ok){
                                 alert(data.message);
+                                this.$router.go(0);
                         }else{
                                 this.error = res.statusText;
                         }

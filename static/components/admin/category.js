@@ -52,7 +52,10 @@ export default {
         <div class="container p-5">
         <div class="d-flex flex-column">        
                 <h2>Product Categories</h2>
-                <small v-if="error" class="text-danger"> *{{ error }} </small>
+                <div class="alert alert-danger" v-if="error">
+                        <a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+                        <strong>Alert!</strong> *{{ error }}
+                </div>
                 <hr>
                 <div class="align-self-end">
                         <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#register"><i class="bi bi-bookmark-plus-fill"></i> Add</button>
@@ -60,7 +63,7 @@ export default {
         </div>
         <!-- <small v-if="error" class="text-danger"> </small> -->
         
-        <table class="table table-striped p-5">
+        <table class="table table-striped p-5 table-hover ">
                 <thead >
                         <tr>
                                 <th scope="col">ID</th>
@@ -90,7 +93,6 @@ export default {
                                                 </button>
                                         </div>
                                 </td>
-                                ${modal}
                                 <div class="modal fade" v-bind:id="'category-delete-'+category.id.toString()" tabindex="-1" aria-labelledby="sad" aria-hidden="true">
                                 <div class="modal-dialog">
                                         <div class="modal-content">
@@ -108,9 +110,12 @@ export default {
                                         </div>
                                 </div>
                                 </div>
+                                ${modal}
+
                         </tr>
                 </tbody>
         </table>
+        
         <div class="modal fade" id="register" tabindex="-1" aria-labelledby="e1" aria-hidden="true">
         <div class="modal-dialog modal-lg">
                 <div class="modal-content">
@@ -190,10 +195,9 @@ export default {
                         const data = await res.json().catch((e)=>{})
                         if(res.ok){
                                 alert(data.message);
+                                this.$router.go(0);
                         }else{
                                 this.error = data.message;
-                                // console.log(data.message)
-                                // alert(data.message)
                         }
 
                 },
@@ -206,7 +210,7 @@ export default {
                         const data = await res.json().catch((e)=>{})
                         if(res.ok){
                                 alert(data.message);
-                                // this.$router.push({path: '/admin/managers'} )
+                                this.$router.go(0);
                         }else{
                                 this.error = data.message;
                         }
@@ -220,6 +224,7 @@ export default {
                         const data = await res.json().catch((e)=>{})
                         if(res.ok){
                                 alert(data.message);
+                                this.$router.go(0);
                         }else{
                                 this.error = data.message;
                         }
@@ -236,11 +241,10 @@ export default {
                         })
                         const data = await res.json().catch((e)=>{});
                         if (res.ok) {
-                                // this.mounted();
                                 alert(data.message);
+                                this.$router.go(0);
                         } else {
-                                // alert(data.message)
-                                this.error = data.message.id;
+                                this.error = data.message;
                         }
 
                 },
@@ -254,11 +258,10 @@ export default {
                                 },
                                 body: JSON.stringify(category),
                         })
-                        // console.log(category)
                         const data = await res.json().catch((e)=>{});
                         if (res.ok) {
-                                // this.mounted();
                                 alert(data.message);
+                                this.$router.go(0);
                         } else {
                                 this.error = data.message;
                         }

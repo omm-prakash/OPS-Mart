@@ -5,7 +5,7 @@ export default {
                 <h2>Customers</h2>
                 <small v-if="error" class="text-danger"> *{{ error }} </small>
                 <hr>
-                <table class="table table-striped p-5">
+                <table class="table table-striped p-5  table-hover ">
                         <thead>
                                 <tr>
                                         <th scope="col">ID</th>
@@ -60,6 +60,7 @@ export default {
                         const data = await res.json().catch((e)=>{})
                         if(res.ok){
                                 alert(data.message);
+                                this.$router.go(0);
                         }else{
                                 this.error = res.statusText;
                         }

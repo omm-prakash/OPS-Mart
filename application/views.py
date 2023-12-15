@@ -6,7 +6,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from flask_restful import marshal, fields
 from celery.result import AsyncResult
 from sqlalchemy import or_, and_
-from .tasks import create_resource_csv
+from .tasks import create_transaction_csv, create_product_csv
 from datetime import datetime
 import pytz
 import time
@@ -532,19 +532,60 @@ def deactivate_category(id):
 
 
 
-@app.get('/download-csv')
-def download_csv():
-    task = create_resource_csv.delay()
-    return jsonify({"task-id": task.id})
+# @app.get('/download-csv')
+# @auth_required('token')
+# def download_csv():
+        # task = create_resource_csv.apply_async(args=[marshal(current_user, user_fields)])
+        # return jsonify({"task-id": task.id})
 
 
 @app.get('/get-csv/<task_id>')
+@auth_required('token')
 def get_csv(task_id):
     res = AsyncResult(task_id)
     if res.ready():
         filename = res.result
         print(filename)
         # return 
+        return send_file(filename, as_attachment=True)
+    else:
+        return jsonify({"message": "Task Pending"}), 404
+    
+@app.get('/manager/get/transaction/report')
+@auth_required('token')
+@roles_required('manager')
+def get_transaction_report():
+        task = create_transaction_csv.apply_async(args=[marshal(current_user, user_fields)])
+        return jsonify({"task-id": task.id})
+
+@app.get('/manager/download/transaction/report/<task_id>')
+# @auth_required('token')
+# @roles_required('manager')
+def send_transaction_report(task_id):
+    res = AsyncResult(task_id)
+    if res.ready():
+        filename = res.result
+        # print(filename,'is prepared!!')
+        return send_file(filename, as_attachment=True)
+    else:
+        return jsonify({"message": "Task Pending"}), 404
+
+# create_product_csv
+@app.get('/manager/get/product/report')
+@auth_required('token')
+@roles_required('manager')
+def get_product_report():
+        task = create_product_csv.apply_async(args=[marshal(current_user, user_fields)])
+        return jsonify({"task-id": task.id})
+
+@app.get('/manager/download/product/report/<task_id>')
+# @auth_required('token')
+# @roles_required('manager')
+def send_product_report(task_id):
+    res = AsyncResult(task_id)
+    if res.ready():
+        filename = res.result
+        print(filename,'is prepared!!')
         return send_file(filename, as_attachment=True)
     else:
         return jsonify({"message": "Task Pending"}), 404

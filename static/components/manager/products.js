@@ -6,8 +6,9 @@ export default {
                         <div class="alert alert-danger alert-dismissible fade show" v-if="error">
                                 <strong>*</strong>{{ error }}
                                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>        
-                        <div class="align-self-end">
+                        </div>
+                                
+                        <div class="align-self-end float-end">
                                 <router-link to='/manager/add_product'>
                                         <button type="button" class="btn btn-success">
                                                 <i class="bi bi-bookmark-plus-fill"></i> Add
@@ -132,6 +133,19 @@ export default {
                                 </tr>
                         </tbody>
                 </table>
+                <p class="text-secondary" v-if="products">
+                        <strong class="text-dark">
+                                <i class="bi bi-filetype-csv text-success" style="font-size: 1.5em;"></i> CSV Report: 
+                        </strong>
+                        <span class="text-dark">Click 
+                                <button type="button" class="btn btn-link p-0 align-center" style="text-decoration: none;" @click='downlodResource'>
+                                        here
+                                </button>, to download.
+                        </span>
+                        <span class="spinner-border spinner-border-sm" aria-hidden="true" v-if="isWaiting"></span>
+                        <span role="status" v-if="isWaiting"> Downloading...</span>
+                </p>
+
         </div>
         `,
         data(){
@@ -139,7 +153,8 @@ export default {
                         token: localStorage.getItem("auth-token"),
                         error: null,
                         products: null,
-                        categories: null
+                        categories: null,
+                        isWaiting: false
                 }
         },
         async mounted(){
@@ -151,7 +166,9 @@ export default {
                 });
                 const data = await res.json().catch((e)=>{})
                 if(res.ok){
-                        this.products = data;
+                        if(data){
+                                this.products = data;
+                        }
                 }else{
                         this.error = data.message;
                 }
@@ -202,6 +219,31 @@ export default {
                                 this.error = data.message;
                         }
 
-                }
+                },
+                async downlodResource() {
+                        this.isWaiting = true
+                        const res = await fetch('/manager/get/product/report',{
+                                headers: {
+                                        "Authentication-Token": this.token
+                                }
+                        })
+                        const data = await res.json()
+                        if (res.ok) {
+                                const taskId = data['task-id']
+                                const intv = setInterval(async () => {
+                                        const csv_res = await fetch(`/manager/download/product/report/${taskId}`,{
+                                                headers: {
+                                                        "Authentication-Token": this.token
+                                                }                        
+                                        })
+                                        if (csv_res.ok) {
+                                                this.isWaiting = false
+                                                clearInterval(intv)
+                                                window.location.href = `/manager/download/transaction/report/${taskId}`
+                                        }
+                                }, 1000)
+                        }
+                },
+
         }
 }

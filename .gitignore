@@ -1,2 +1,5 @@
 dev.db
 .env
+*.csv
+*.rdb
+templates/design.html

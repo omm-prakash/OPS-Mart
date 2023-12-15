@@ -361,7 +361,7 @@ user_fields = {
 class Profile(Resource):
         @auth_required('token')
         def get(self):
-                print(current_user, current_user.email)
+                # print(current_user, current_user.email)
                 return marshal(current_user, user_fields)
 
 api.add_resource(User, '/user')

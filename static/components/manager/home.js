@@ -13,7 +13,7 @@ export default {
                                                 <h1 v-if="userData">Welcome, {{ user.username }} </h1>
                                                 <h1 v-else>Welcome, Prospective Manger </h1>
                                                 <div class="text-muted">
-                                                        <ul>
+                                                        <ul class="list-unstyled px-3">
                                                         <li v-if="userData"><strong>Email:</strong> {{ user.email }} </li>
                                                         <li><strong>Account Status:</strong> 
                                                                 <span v-if="user.active" class="text-success"> Active </span>

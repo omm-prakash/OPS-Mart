@@ -57,7 +57,7 @@ export default {
                                 },
                                 body: JSON.stringify(this.credential),
                         })
-                        const data = await res.json();
+                        const data = await res.json().catch((e)=>{})
                         if(res.ok){                                
                                 if(data.token){
                                         localStorage.setItem('auth-token',data.token)
@@ -65,7 +65,10 @@ export default {
                                         this.$router.push({path: '/'} )
                                 }
                         }else{
-                                this.error = data.message
+                                console.log(data)
+                                if(data.token){
+                                        this.error = data.message
+                                }
                         }
                 }
         }

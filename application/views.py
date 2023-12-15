@@ -21,6 +21,10 @@ def user_login():
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
+        # user = User.query.get(1)
+        # print("Last Login:", user.last_login_at)
+        # print("Current Login:", user.current_login_at)
+        # print("Login Count:", user.login_count)
 
         if not email:
                 return jsonify({'message': 'Error: Email not provided!!'}), 400
@@ -283,7 +287,7 @@ def get_cart():
 @app.get('/customer/transactions')
 @auth_required('token')
 # @roles_required('customer')
-@cache.cached(timeout=120)
+# @cache.cached(timeout=120)
 def old_transaction():
         if 'manager' in current_user.roles:
                 product_ids = list(map(lambda x: x.id, Product.query.filter_by(manager_id=current_user.id).all()))
@@ -420,7 +424,7 @@ product_fields = {
         'manager': ManagerField
 }
 @app.get('/get/products')
-@cache.cached(timeout=60)
+# @cache.cached(timeout=60)
 def fetch_products():
         # products = Product.query.filter(Product.id==1)
         products = Product.query.join(Category).filter(Category.active == True).all()
@@ -577,8 +581,8 @@ def send_transaction_report(task_id):
 
 # create_product_csv
 @app.get('/manager/get/product/report')
-# @auth_required('token')
-# @roles_required('manager')
+@auth_required('token')
+@roles_required('manager')
 @cache.cached(timeout=120)
 def get_product_report():
         task = create_product_csv.apply_async(args=[marshal(current_user, user_fields)])

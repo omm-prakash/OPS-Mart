@@ -3,3 +3,4 @@ dev.db
 *.csv
 *.rdb
 templates/design.html
+celerybeat*

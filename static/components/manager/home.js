@@ -88,10 +88,10 @@ export default {
                         if (data){
                                 this.user = data;
                                 this.userData = true;
-                                console.log(data);        
+                                // console.log(data);        
                         }
                 }else{
-                        console.log('I am here')
+                        // console.log('I am here')
                 }
         },
 

@@ -240,6 +240,7 @@ export default {
                                                 this.isWaiting = false
                                                 clearInterval(intv)
                                                 window.location.href = `/manager/download/transaction/report/${taskId}`
+                                                alert('CSV Report downloaded!!')
                                         }
                                 }, 1000)
                         }

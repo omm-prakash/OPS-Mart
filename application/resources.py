@@ -6,6 +6,7 @@ from .utils import *
 # from .validation import *
 from .models import db, Category, Product, User
 from flask import abort, jsonify, make_response
+from .cache import cache
 
 api = Api(prefix='/api')
 
@@ -64,6 +65,7 @@ category_fields = {
 class CategoryResource(Resource):
         @auth_required('token')
         @roles_required('admin')
+        # @cache.cached(timeout=120)
         def get(self, id):
                 try:
                         if id==0:
@@ -87,7 +89,7 @@ class CategoryResource(Resource):
         def post(self):
                 parser = category_parser(False)
                 args = parser.parse_args()
-                print(args)
+                # print(args)
                 message = ''
                 categories = Category.query.all()
                 # ids = list(map(lambda x: x.id,categories)) 
@@ -138,7 +140,7 @@ class CategoryResource(Resource):
                 categories = Category.query.all()
                 category = Category.query.get(args['id'])
                 ids = list(map(lambda x: x.id,categories)) 
-                print(args)
+                # print(args)
                 if args['id']==1:
                         return make_response(jsonify({'message': 'Error: Global category can not be updated!!'}), 405)
                 if args['id'] not in ids:
@@ -203,6 +205,7 @@ product_fields = {
 class ProductResource(Resource):
         @auth_required('token')
         @roles_required('manager')
+        # @cache.cached(timeout=2)
         def get(self):
                 try:
                         manager_id = current_user.id
@@ -289,7 +292,7 @@ class ProductResource(Resource):
         @roles_required('manager')
         def put(self):
                 parser = product_parser(required=False, id_required=True)
-                print(parser)
+                # print(parser)
                 args = parser.parse_args()
                 message = ''
                 products = Product.query.all()
@@ -347,7 +350,7 @@ class ProductResource(Resource):
 
 class UserRole(fields.Raw):
         def format(self, roles):
-                print(roles[0].name)
+                # print(roles[0].name)
                 return roles[0].name
         
 user_fields = {
@@ -360,6 +363,7 @@ user_fields = {
 
 class Profile(Resource):
         @auth_required('token')
+        @cache.cached(timeout=10)
         def get(self):
                 # print(current_user, current_user.email)
                 return marshal(current_user, user_fields)

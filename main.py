@@ -1,7 +1,7 @@
 from flask import Flask
 from application.models import db
-# , User, Role
 from application.resources import api
+from application.cache import cache
 from config import DevelopmentConfig
 from flask_security import SQLAlchemyUserDatastore, Security
 from application.sec import datastore 
@@ -16,6 +16,7 @@ def create_app():
         excel.init_excel(app)
         # datastore = SQLAlchemyUserDatastore(db, User, Role)
         app.security = Security(app, datastore)
+        cache.init_app(app)
         with app.app_context():
                 import application.views
         return app

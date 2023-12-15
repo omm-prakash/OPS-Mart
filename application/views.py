@@ -7,6 +7,7 @@ from flask_restful import marshal, fields
 from celery.result import AsyncResult
 from sqlalchemy import or_, and_
 from .tasks import create_transaction_csv, create_product_csv
+from application.cache import cache
 from datetime import datetime
 import pytz
 import time
@@ -272,6 +273,7 @@ card_fields = {
 @app.get('/customer/cart/get')
 @auth_required('token')
 @roles_required('customer')
+# @cache.cached(timeout=240)
 def get_cart():
         cards = ProductUser.query.filter_by(user_id=current_user.id, commit=False).all()
         # if not cards:
@@ -281,6 +283,7 @@ def get_cart():
 @app.get('/customer/transactions')
 @auth_required('token')
 # @roles_required('customer')
+@cache.cached(timeout=120)
 def old_transaction():
         if 'manager' in current_user.roles:
                 product_ids = list(map(lambda x: x.id, Product.query.filter_by(manager_id=current_user.id).all()))
@@ -309,6 +312,7 @@ category_fields = {
 }
 @app.get('/get/category')
 @auth_required('token')
+# @cache.cached(timeout=120)
 def category():
         roles = list(map(lambda x: x.name, current_user.roles))
         if 'manager' in roles:
@@ -416,6 +420,7 @@ product_fields = {
         'manager': ManagerField
 }
 @app.get('/get/products')
+@cache.cached(timeout=60)
 def fetch_products():
         # products = Product.query.filter(Product.id==1)
         products = Product.query.join(Category).filter(Category.active == True).all()
@@ -572,8 +577,9 @@ def send_transaction_report(task_id):
 
 # create_product_csv
 @app.get('/manager/get/product/report')
-@auth_required('token')
-@roles_required('manager')
+# @auth_required('token')
+# @roles_required('manager')
+@cache.cached(timeout=120)
 def get_product_report():
         task = create_product_csv.apply_async(args=[marshal(current_user, user_fields)])
         return jsonify({"task-id": task.id})

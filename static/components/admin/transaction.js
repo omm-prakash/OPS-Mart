@@ -29,8 +29,8 @@ export default {
                                                         <td>{{index+1}}</td>
                                                         <td>{{card.product_id.name}}</td>
                                                         <td>{{card.product_id.manager}}</td>
-                                                        <td>{{card.quantity}}</td>
-                                                        <td>{{card.product_id.cost}}</td>
+                                                        <td>{{card.quantity}} {{card.product_id.type}}</td>
+                                                        <td><span>&#8377;</span> {{card.product_id.cost}}</td>
                                                         <td>{{card.transaction_date.slice(0,-6)}}</td>
                                                         <td><span>&#8377;</span> {{card.quantity*card.product_id.cost}}</td>
                                                 </tr>

@@ -8,7 +8,7 @@ from application.sec import datastore
 from application.worker import celery_init_app 
 import flask_excel as excel
 from celery.schedules import crontab
-from application.tasks import customer_monthly_transactions, customer_daily_request
+from application.tasks import customer_monthly_transactions, customer_daily_request, clear_memory
 
 def create_app():
         app = Flask(__name__)
@@ -37,11 +37,18 @@ def send_email_monthly_customer(sender, **kwargs):
 
 @celery_app.on_after_configure.connect
 def send_email_daily_customer(sender, **kwargs):
-    print('I am here')
     sender.add_periodic_task(
         # 10,
         crontab(hour=18, minute=30),
         customer_daily_request,
+    )
+
+@celery_app.on_after_configure.connect
+def clear_buffer_directory(sender, **kwargs):
+    sender.add_periodic_task(
+          3600,
+        # crontab(hour=23, minute=59),
+        clear_memory.s('buffer'),
     )
 
 if __name__=='__main__':

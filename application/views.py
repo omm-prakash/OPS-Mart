@@ -8,9 +8,11 @@ from celery.result import AsyncResult
 from sqlalchemy import or_, and_
 from .tasks import create_transaction_csv, create_product_csv
 from application.cache import cache
-from datetime import datetime
+from datetime import datetime, timedelta
+from .service import create_pdf_report, create_html_report
 import pytz
 import time
+import os
 
 @app.get('/')
 def home():
@@ -554,8 +556,7 @@ def get_csv(task_id):
     res = AsyncResult(task_id)
     if res.ready():
         filename = res.result
-        print(filename)
-        # return 
+        # print(filename)
         return send_file(filename, as_attachment=True)
     else:
         return jsonify({"message": "Task Pending"}), 404
@@ -567,18 +568,6 @@ def get_transaction_report():
         task = create_transaction_csv.apply_async(args=[marshal(current_user, user_fields)])
         return jsonify({"task-id": task.id})
 
-@app.get('/manager/download/transaction/report/<task_id>')
-# @auth_required('token')
-# @roles_required('manager')
-def send_transaction_report(task_id):
-    res = AsyncResult(task_id)
-    if res.ready():
-        filename = res.result
-        # print(filename,'is prepared!!')
-        return send_file(filename, as_attachment=True)
-    else:
-        return jsonify({"message": "Task Pending"}), 404
-
 # create_product_csv
 @app.get('/manager/get/product/report')
 @auth_required('token')
@@ -589,13 +578,94 @@ def get_product_report():
         return jsonify({"task-id": task.id})
 
 @app.get('/manager/download/product/report/<task_id>')
+@app.get('/manager/download/transaction/report/<task_id>')
 # @auth_required('token')
 # @roles_required('manager')
-def send_product_report(task_id):
+def send_transaction_report(task_id):
     res = AsyncResult(task_id)
     if res.ready():
         filename = res.result
-        print(filename,'is prepared!!')
         return send_file(filename, as_attachment=True)
     else:
         return jsonify({"message": "Task Pending"}), 404
+
+
+# @app.get('/manager/download/product/report/<task_id>')
+# # @auth_required('token')
+# # @roles_required('manager')
+# def send_product_report(task_id):
+#     res = AsyncResult(task_id)
+#     if res.ready():
+#         filename = res.result
+#         print(filename)
+#         # print(filename,'is prepared!!')
+#         filename='customer_transaction.pdf'
+#         return send_file(filename, as_attachment=True)
+#     else:
+#         return jsonify({"message": "Task Pending"}), 404
+
+
+@app.get('/customer/get/transaction/report/<file>')
+@auth_required('token')
+@roles_required('customer')
+def get_transaction_report_pdf(file):
+        results = db.session.query(ProductUser, Product).join(Product, Product.id == ProductUser.product_id).all()
+        current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
+        month = current_time.strftime('%B') 
+        year = current_time.strftime('%Y')
+        
+        transaction = []
+        total = 0
+        data = {}
+        data['email'] = current_user.email
+        data['username'] = current_user.username
+        data['month'] = month
+        data['year'] = year
+        for (card,product) in results:
+                cardData = {}
+                transaction_date = card.transaction_date
+                if transaction_date:
+                        transaction_date = pytz.timezone('Asia/Kolkata').localize(transaction_date)
+                        del_time = current_time-transaction_date
+                if card.user_id==current_user.id and card.commit and del_time <= timedelta(days=int(current_time.day)):
+                        manager = User.query.get(product.manager_id)
+                        cardData['name'] = product.name
+                        cardData['seller'] = manager.username
+                        cardData['quantity'] = card.quantity
+                        cardData['type'] = product.type
+                        cardData['cost'] = product.cost
+                        cardData['transaction_date'] = card.transaction_date.strftime("%Y-%m-%d %H:%M")
+                        total += product.cost*card.quantity
+                        transaction.append(cardData)
+                
+        data['transaction'] = transaction
+        data['total'] = total
+        file_ = 'application/templates/this_month_transaction.html'
+        hash = generate_password_hash(current_user.password)
+        # print(file)
+        if file=='pdf':
+                output_file = f'buffer/{hash}.pdf'
+                print(output_file)
+                create_pdf_report(file=file_, data=data, output_file=output_file)
+        elif file=='html':
+                output_file = f'buffer/{hash}.html'
+                create_html_report(file=file_, data=data, output_file=output_file)
+        else:
+                return jsonify({"message": "Invalid file type."}), 404
+
+        return jsonify({"doc-id": hash})
+
+@app.get('/customer/download/transaction/report/<file>/<doc_id>')
+def send_transaction_report_pdf(file, doc_id):
+        if file=='pdf':
+                output_file = f'buffer/{doc_id}.pdf'
+        elif file=='html':
+                output_file = f'buffer/{doc_id}.html'
+        else:
+                return jsonify({"message": "Invalid file type."}), 404
+        # print('PDF request:',output_file)
+        if os.path.exists(output_file):
+                doc = send_file(output_file, as_attachment=True, download_name='ops_mart-recipt.'+file)
+                return doc
+        else:
+                return jsonify({"message": "Recipt not generated"}), 404

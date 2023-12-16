@@ -4,3 +4,4 @@ dev.db
 *.rdb
 templates/design.html
 celerybeat*
+buffer/*

@@ -1,5 +1,4 @@
 import productCard from './card.js'
-// import * as stringSimilarity from 'string-similarity';
 
 export default {
         template: `
@@ -30,29 +29,35 @@ export default {
                                         </li>
                                         <li>
                                                 <h5 class="fw-bold">Price</h5>
-                                                <div style="display: flex; gap: 4px; align-items: center;" class="px-3 py-1">
-                                                        <span>{{ minPrice }} </span>
-                                                                <input type="range" id="rangeInput" v-model="filter.maxPrice">
-                                                        <span>{{ maxPrice }}</span>
+                                                <div style="display: flex; gap: 4px; align-items: center;" class="py-1">
+                                                        <span>&#8377;{{ minPrice }} </span>
+                                                                <input type="range" id="rangeInput" v-model="filter.price">
+                                                        <span>&#8377;{{ maxPrice }}</span>
                                                 </div>
+                                                <p class="text-secondary">@product price < &#8377;{{ minPrice + ((filter.price / 100) * (maxPrice - minPrice)) }}</p>
+                                                
+                                        </li>
+                                        <li>
+                                                <h5 class="fw-bold">Manf. Date</h5>
+                                                        
+                                                <p>From<input type="date" id="manf" class="form-control" name="card_deadline" v-model="filter.from"></p>
+                                                <p>To<input type="date" id="expiry" class="form-control" name="card_deadline" v-model="filter.to"></p>
+                                                
                                         </li>
                                 
                                 </ul>
+                                <button type="button" class="btn btn-outline-warning" @click="refresh">Clear Filter</button>
+                                <hr>
                                 
-                                <button type="button" class="btn btn-outline-info" @click="filterProduct"><i class="bi bi-search"></i> Filter</button>
-                                <br>  <hr>
+                                       
+                                <input class="form-control me-2  text-dark " type="text" aria-label="Search" v-model="searchText" placeholder="Search Product">
+
                                 
-                                
-                                <br>
-                                <form class="d-flex" role="search">
-                                        <input class="form-control me-2 bg-transparent text-white " type="search" aria-label="Search" v-model="searchText">
-                                        <button class="btn btn-outline-success" @click="searchProduct"><i class="bi bi-search"></i></button>
-                                </form>
                         </div>
                         <div class="col-md-9  bg-transparent bg-gradient" style="opacity: 0.9;">
                                 <div class="container-fluid" style="max-height: 94vh; overflow-y: auto; ">
                                         <div class="row px-1 py-1">
-                                                <productCard v-for="product in products" :prod="product" />
+                                                <productCard v-for="product in filteredProducts" :prod="product" />
                                         </div>
                                 </div>
                                  
@@ -64,21 +69,16 @@ export default {
                 return {
                         token: localStorage.getItem('auth-token'),
                         categories: null,
-                        // selectedCategory: [],
                         minPrice: null,
                         maxPrice: null,
                         filter: {
-                                // minPrice: 0,
-                                maxPrice: 100,
+                                price: 100,
                                 selectedCategories: [],
-                                // categories: null
+                                from: null,
+                                to: null
                         },
-                        products: null,
                         fetchedProducts: null,
                         searchText: "",
-                        filteredProducts: null,
-                        similarityThreshold: 0.5,
-                        productNames: []
                 }
         },
         async mounted() {
@@ -91,8 +91,6 @@ export default {
                 const data = await res.json().catch((e) => { })
                 if (res.ok) {
                         this.categories = data;
-                } else {
-                        alert(this.error)
                 }
 
                 // fetch products
@@ -102,38 +100,38 @@ export default {
                         prods.sort((a, b) => new Date(b.onboard_date) - new Date(a.onboard_date));
                         this.maxPrice = prods.reduce((max, product) => (product.cost > max ? product.cost : max), -Infinity);
                         this.minPrice = prods.reduce((min, product) => (product.cost < min ? product.cost : min), Infinity);
-                        this.products = prods
                         this.fetchedProducts = prods
-                        this.productNames = this.fetchedProducts.map(obj => obj.name);
-                        // console.log(this.maxPrice)
-                } else {
-                        console.log(this.error);
                 }
 
         },
-        methods: {
-                filterProduct() {
-                        this.filteredProducts = this.fetchedProducts.filter(product => product.cost <= this.minPrice+((this.filter.maxPrice / 100)*(this.maxPrice-this.minPrice)));
-                        if (this.filter.selectedCategories.length != 0) {
-                                this.filteredProducts = this.filteredProducts.filter(product => this.filter.selectedCategories.includes(product.category_id))
+        computed: {
+                filteredProducts() {
+                        if (this.fetchedProducts) {
+                                let serachResult = this.fetchedProducts.filter(p => { return p.name.toLowerCase().indexOf(this.searchText.toLowerCase()) != -1; });
+                                let categoryFilter = serachResult
+                                if (this.filter.selectedCategories.length != 0) {
+                                        categoryFilter = serachResult.filter(product => this.filter.selectedCategories.includes(product.category_id))
+                                }
+                                let priceFilter = categoryFilter.filter(product => product.cost <= this.minPrice + ((this.filter.price / 100) * (this.maxPrice - this.minPrice)));
+                                let manfFilter = priceFilter
+                                if(this.filter.from){
+                                        manfFilter = priceFilter.filter(product => product.manufacture_date >= this.filter.from);
+                                }
+                                if(this.filter.to){
+                                        manfFilter = manfFilter.filter(product => product.manufacture_date <= this.filter.to);
+                                }
+                                return manfFilter
                         }
-                        this.products = this.filteredProducts
-                        // console.log(this.filter.maxPrice)
-                        // console.log(this.filter.selectedCategories.length)
-                },
-                searchProduct() {
-                        // console.log(this.fetchedProducts.name)
-                        if (this.searchText != "") {
-                                const matches = stringSimilarity.findBestMatch(this.searchText, this.productNames);
-                                const similarStrings = matches.ratings
-                                        .filter((rating, index) => rating.rating > this.similarityThreshold)
-                                        .map((rating, index) => this.productNames[index]);
-                                // console.log(matches, similarStrings)
-                                this.products = this.fetchedProducts.filter(product => similarStrings.includes(product.name))
-                        }else{
-                                this.products = this.fetchedProducts
-                        }
-                        // this.products = similarStrings;
+                }
+        },
+        methods:{
+                refresh(){
+                        this.filter={
+                                price: this.maxPrice,
+                                selectedCategories: [],
+                                from: null,
+                                to: null
+                        };
                 }
         },
         components: {
@@ -142,19 +140,4 @@ export default {
 
 }
 
-// <div class="card m-2 col-md-5 p-0 bg-light bg-gradient ">
-// <div class="card-header">
-//         <h4><strong>Product</strong></h4>
-// </div>
-// <div class="card-body">
-//         <ul class="list-unstyled px-4">
-//                 <li><strong>Price:</strong>10</li>
-//                 <li><strong>Manf. Date:</strong>10</li>
-//                 <li><strong>Expiry. Date:</strong>10</li>
-//         </ul>
-//         <p class="card-text"><small class="text-muted">added on </small></p>
-//         <hr>
-//         <button type="button" class="btn btn-success"><i class="bi bi-cart-plus-fill"></i></button>
-//         <p class="card-text"></p>
-// </div>
-// </div>
+// ref: https://stackoverflow.com/questions/69287834/search-bar-vue-js

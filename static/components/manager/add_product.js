@@ -96,7 +96,6 @@ export default {
                 const data = await res.json().catch((e)=>{});
                 if(res.ok){
                         this.categories = data;
-                        // console.log(data);
                 }else{
                         this.error = data.message;
                 }

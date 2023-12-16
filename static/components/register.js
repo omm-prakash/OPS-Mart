@@ -64,11 +64,9 @@ export default {
                                 if (data.token) {
                                         localStorage.setItem('auth-token', data.token)
                                         localStorage.setItem('role', data.role)
-                                        // this.$router.push({ path: '/' })
                                 }
                         } else {
                                 this.error = data.message
-                                // console.log(data)
                         }
                 }
         }

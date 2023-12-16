@@ -1,19 +1,17 @@
 export default {
-        // props: ['hello'],
-        // setup(props) {
-        //         // setup() receives props as the first argument.
-        //         console.log(props.hello)
-        // },
         template: `
         <nav class="navbar navbar-expand-lg bg-body-tertiary bg-primary sticky-top" data-bs-theme="dark">
                 <div class="container-fluid">
                         <router-link to="/" class="navbar-brand" style="font-family: 'Prompt', sans-serif;">
                                 <img src="../static/images/logo-rb.png" width="55" height="30" class="d-inline-block align-top" alt="">
                         </router-link>
+                        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                             <span class="navbar-toggler-icon"></span>
+                        </button>
                         <div class="collapse navbar-collapse" id="navbarSupportedContent">
                                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                                        <li class="nav-item" v-if="!role"><router-link to="/" v-bind:class="$route.name=='home'?'nav-link active':'nav-link'">Home</router-link></li>
-                                        <li class="nav-item" v-if="!role"><router-link to="/privacy" :class="$route.name=='privacy'?'nav-link active':'nav-link'">Privacy Policy</router-link></li>
+                                        <li class="nav-item" v-if="!role"><router-link to="/" v-bind:class="$route.name=='home'?'nav-link active':'nav-link'"><i class="bi bi-house-heart"></i> Home</router-link></li>
+                                        <li class="nav-item" v-if="!role"><router-link to="/privacy" :class="$route.name=='privacy'?'nav-link active':'nav-link'"><i class="bi bi-shield-check"></i> Privacy Policy</router-link></li>
                                         
                                         <li class="nav-item" v-if="role=='admin'"><router-link to="/admin/managers" v-bind:class="$route.name=='admin/managers'?'nav-link active':'nav-link'"><i class="bi bi-person-lines-fill"></i> Manager</router-link></li>
                                         <li class="nav-item" v-if="role=='admin'"><router-link to="/admin/customers" v-bind:class="$route.name=='admin/customers'?'nav-link active':'nav-link'"><i class="bi bi-people"></i> Customer</router-link></li>
@@ -31,6 +29,7 @@ export default {
                                         <li class="nav-item" v-if="role=='customer'"><router-link to="/customer/transaction" v-bind:class="$route.name=='customer/transaction'?'nav-link active':'nav-link'"><i class="bi bi-receipt-cutoff"></i> Transactions</router-link></li>
 
                                 </ul>
+
                                 
                                 <!-- Account Setup -->
                                 <div class="nav-item mx-3" v-if="!is_login">
@@ -55,11 +54,6 @@ export default {
         data(){
                 return{
                         role: localStorage.getItem("role"),
-                        username: false,
-                        // {
-                        //         username: null
-                        // }
-                        // is_login: localStorage.getItem("auth-token")?true:false
                 }
                 
         },
@@ -67,32 +61,12 @@ export default {
                 is_login(){
                         return localStorage.getItem("auth-token")?true:false
                 },
-                // async username(){
-
-                // }
         },
         methods: {
                 logout(){
                         localStorage.removeItem("role");
                         localStorage.removeItem("auth-token");
                         this.$router.push({path:"/login"});
-                }
+                },
         },
-        // async mounted(){
-        //         const prof = await fetch('/api/profile',{
-        //                 headers: {
-        //                         "Authentication-Token": localStorage.getItem("auth-token")
-        //                 }
-        //         });
-        //         const p = await prof.json().catch((e)=>{});
-        //         if(prof.ok){
-        //                 this.username = p.username;
-        //                 // console.log(this.profile, p);
-        //         }
-        // }
 }
-
-/* <div class="nav-item text-white mx-3 text-center" v-if="is_login">
-<p><i class="bi bi-person-circle" style="font-size: 17px;"></i> Hello, <span v-if="username"> username </span></p>
-</div>
- */

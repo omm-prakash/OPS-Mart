@@ -199,15 +199,8 @@ export default {
                         }else{
                                 alert(data.message);
                         }
-
-                        // console.log(prod.name)
-
                 },
         },
-        components: {
-                // cartElement
-        }
 }
 
-/* <cartElement v-for="(card,index) in cart" :card="card" :index="index+1" @update:selectedCard="handleOrder"/> */
                                                 

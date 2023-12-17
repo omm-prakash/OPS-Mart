@@ -98,7 +98,8 @@ go install github.com/mailhog/MailHog@latest
   - View the latest products added automatically.
 
 ## Database ER Diagram
-![landing page](snaps/er.png)
+![er](https://github.com/omm-prakash/OPS-Mart/assets/76400354/dffc2e83-c3ad-4334-b2cf-b5b50de00670)
+
 
 ## Project Directory
 ```html
@@ -152,40 +153,38 @@ go install github.com/mailhog/MailHog@latest
 ### User Landing Page
 ![image](https://github.com/omm-prakash/OPS-Mart/assets/76400354/c446ed8f-f3d5-4895-a0d2-71d4d7a2be24)
 
-
 ### SignIn Page
-![Alt text](https://github.com/omm-prakash/OPS-Mart/snaps/image-1.png)
-
+![image-1](https://github.com/omm-prakash/OPS-Mart/assets/76400354/3519fa0c-3fbb-4e7c-a39e-beb35a128cf7)
 
 ### SignUp Page
-![Alt text](snaps/image-2.png)
+![image-2](https://github.com/omm-prakash/OPS-Mart/assets/76400354/6a788c02-910c-4990-a56f-59b871a850c3)
 
 ### Customer: Product Dashboard
-![Alt text](snaps/image-3.png)
+![image-3](https://github.com/omm-prakash/OPS-Mart/assets/76400354/6c69fb39-5551-4cac-a497-41d743ce6eee)
 
 ### Customer: Cart Page
-![Alt text](snaps/image-4.png)
+![image-4](https://github.com/omm-prakash/OPS-Mart/assets/76400354/497bc693-1e14-412a-8281-235633d43544)
 
 ### Manager: Product Page
-![Alt text](snaps/image-6.png)
+![image-6](https://github.com/omm-prakash/OPS-Mart/assets/76400354/55484a8d-5196-4029-bd8a-fedd1d3baf88)
 
 ### Admin: Category Page
-![Alt text](snaps/image-7.png)
+![Uploading image-7.png…]()
 
 ### Admin: Manager Approval Page
-![Alt text](snaps/image-8.png)
+![image-8](https://github.com/omm-prakash/OPS-Mart/assets/76400354/6ba9f268-0a5f-44ca-8917-4e973d6819d9)
 
 ### Transaction Page
-![Alt text](snaps/image-5.png)
+![image-5](https://github.com/omm-prakash/OPS-Mart/assets/76400354/81206399-6084-4d84-a403-61915f90a4e4)
 
 ### Customer: Daily Reminder Email 
-![Alt text](snaps/image-11.png)
+![image-11](https://github.com/omm-prakash/OPS-Mart/assets/76400354/feeb2f83-ff64-420b-bc2f-683f19ec8fa4)
 
 ### Customer: Monthly Transaction Report Email
-![Alt text](snaps/image-12.png)
+![image-12](https://github.com/omm-prakash/OPS-Mart/assets/76400354/7db2e948-a213-423f-8ea5-6eb675cdb206)
 
 ### Customer: Current Month Transaction Downloadable PDF/HTML Report
-![Alt text](snaps/image-10.png)
+![image-10](https://github.com/omm-prakash/OPS-Mart/assets/76400354/b2cfec43-143c-4f75-9e10-d34a6352ffde)
 
 
 ## References

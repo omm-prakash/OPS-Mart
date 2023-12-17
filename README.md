@@ -98,7 +98,7 @@ go install github.com/mailhog/MailHog@latest
   - View the latest products added automatically.
 
 ## Database ER Diagram
-![landing page](er.png)
+![landing page](snaps/er.png)
 
 ## Project Directory
 ```html
@@ -138,7 +138,7 @@ go install github.com/mailhog/MailHog@latest
 │   │   ├── navbar.js
 │   │   ├── privacy.js
 │   │   └── register.js
-│   ├── images/ <!-- Frontend images -->
+│   ├── snaps/images/ <!-- Frontend snaps/images -->
 │   ├── index.js
 │   ├── router.js
 │   └── style.css
@@ -150,44 +150,44 @@ go install github.com/mailhog/MailHog@latest
 ## Application Snaps
 
 ### User Landing Page
-![landing page](image.png)
+![landing page](snaps/image.png)
 
 ### SignIn Page
-![Alt text](image-1.png)
+![Alt text](snaps/image-1.png)
   
 ### SignUp Page
-![Alt text](image-2.png)
+![Alt text](snaps/image-2.png)
 
 ### Customer: Product Dashboard
-![Alt text](image-3.png)
+![Alt text](snaps/image-3.png)
 
 ### Customer: Cart Page
-![Alt text](image-4.png)
+![Alt text](snaps/image-4.png)
 
 ### Manager: Product Page
-![Alt text](image-6.png)
+![Alt text](snaps/image-6.png)
 
 ### Admin: Category Page
-![Alt text](image-7.png)
+![Alt text](snaps/image-7.png)
 
 ### Admin: Manager Approval Page
-![Alt text](image-8.png)
+![Alt text](snaps/image-8.png)
 
 ### Transaction Page
-![Alt text](image-5.png)
+![Alt text](snaps/image-5.png)
 
 ### Customer: Daily Reminder Email 
-![Alt text](image-11.png)
+![Alt text](snaps/image-11.png)
 
 ### Customer: Monthly Transaction Report Email
-![Alt text](image-12.png)
+![Alt text](snaps/image-12.png)
 
 ### Customer: Current Month Transaction Downloadable PDF/HTML Report
-![Alt text](image-10.png)
+![Alt text](snaps/image-10.png)
 
 
 
-For more details or any clarifications please feel free contact me @ 21f1005497@ds.study.iitm.ac.in.
+For more details or any clarifications please feel free to contact me @ 21f1005497@ds.study.iitm.ac.in.
 
 Best Regards,<br>
 Omm Prakash Sahoo<br>

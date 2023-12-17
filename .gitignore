@@ -5,3 +5,7 @@ dev.db
 templates/design.html
 celerybeat*
 buffer/*
+Project Report.pdf
+README.pdf
+readme.md
+

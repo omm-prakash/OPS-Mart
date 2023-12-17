@@ -35,19 +35,19 @@ export default {
                                         <!-- <hr> -->
                                         <div class="container">
                                                 <ul>
-                                                        <li>Create New Category <ul>
+                                                        <li>Create New Product <ul>
                                                                         <li>Storage handles multiple languages (usually UTF-8 encoding)</li>
                                                                 </ul>
                                                         </li>
-                                                        <li>Edit Category <ul>
+                                                        <li>Edit Product <ul>
                                                                         <li>Change title or description</li>
                                                                 </ul>
                                                         </li>
-                                                        <li>Remove Category <ul>
-                                                                        <li>With confirmation from the admin</li>
+                                                        <li>Remove Product <ul>
+                                                                        <li>Delete product</li>
                                                                 </ul>
                                                         </li>
-                                                        <li>Approve Requests From Store Managers <ul>
+                                                        <li>Requests To Admin <ul>
                                                                         <li>Add new categories, edit, or delete existing categories</li>
                                                                 </ul>
                                                         </li>

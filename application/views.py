@@ -560,7 +560,7 @@ def get_transaction_report_pdf(file):
         hash = generate_password_hash(current_user.password)
         if file=='pdf':
                 output_file = f'buffer/{hash}.pdf'
-                print(output_file)
+                # print(output_file)
                 create_pdf_report(file=file_, data=data, output_file=output_file)
         elif file=='html':
                 output_file = f'buffer/{hash}.html'

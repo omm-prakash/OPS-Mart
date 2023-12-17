@@ -29,16 +29,16 @@ celery_app = celery_init_app(app)
 @celery_app.on_after_configure.connect
 def send_email_monthly_customer(sender, **kwargs):
     sender.add_periodic_task(
-        10,
-        # crontab(hour=9, minute=0, day_of_month=1),
+        # 30,
+        crontab(hour=9, minute=0, day_of_month=1),
         customer_monthly_transactions.s('OPS Mart: Your Monthly Transaction Report'),
     )
 
 @celery_app.on_after_configure.connect
 def send_email_daily_customer(sender, **kwargs):
     sender.add_periodic_task(
-        10,
-        # crontab(hour=18, minute=30),
+        # 30,
+        crontab(hour=18, minute=30),
         customer_daily_request,
     )
 
@@ -46,7 +46,6 @@ def send_email_daily_customer(sender, **kwargs):
 def clear_buffer_directory(sender, **kwargs):
     sender.add_periodic_task(
           3600,
-        # crontab(hour=23, minute=59),
         clear_memory.s('buffer'),
     )
 

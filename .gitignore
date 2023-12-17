@@ -1,7 +1,12 @@
 dev.db
-.env
 *.csv
 *.rdb
 templates/design.html
 celerybeat*
-buffer/*
+buffer
+demo.mp4
+instance
+Project Report.pdf
+readme.md
+README.pdf
+.env

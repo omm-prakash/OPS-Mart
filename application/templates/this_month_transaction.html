@@ -1,0 +1,127 @@
+<html>
+
+<head>
+    <!-- <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> -->
+    <!-- <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css"> -->
+    <title>OPS Mart Month Bill</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+
+        .container {
+            margin-top: 2px;
+            padding: 4;
+            border: 1px solid #000000;
+            background-color: #000000;
+            color: white;
+        }
+
+        .container-inner {
+            margin-top: 2px;
+            padding: 5px;
+            /* border: 1px solid #343a40; */
+        }
+
+        h1 {
+            margin: 0;
+        }
+
+        /* h2, h5 {
+            margin-bottom: 20px;
+        } */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #dee2e6;
+            padding: 8px;
+            text-align: center;
+        }
+
+        th {
+            background-color: #eb0000;
+            color: white;
+        }
+
+        .border-light {
+            border: 1px solid #dee2e6;
+        }
+
+        p {
+            margin-top: 20px;
+        }
+
+        /* Page styling with page number */
+        @page {
+            size: A4;
+            margin: 1.5cm;
+            counter-increment: page;
+
+            @bottom-right {
+                content: "Page " counter(page);
+                font-size: 12px;
+            }
+        }
+
+        @page {
+            @bottom-left {
+                content: "omart.pvt.ltd";
+                font-size: 12px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container" style="padding: 10px;">
+        <h1><i class="" style="color: rgb(78, 255, 78);"></i> OPS Mart</h1>
+    </div>
+    <div class="container-inner">
+        <h2>Month Transactions Recipt</h2>
+        <h4 style="color: rgb(0, 18, 119);">{{ data['date'] }}<sup>th</sup> {{ data['month'] }}, {{ data['year'] }}</h4>
+        <p><strong>Name: </strong> {{ data['username'] }} <br>
+            <strong>Email: </strong> {{ data['email'] }}
+        </p>
+        <br><br> {% if data['transaction']|length > 0 %} <table>
+            <thead>
+                <tr>
+                    <th scope="col">#</th>
+                    <th scope="col">Name</th>
+                    <th scope="col">Seller</th>
+                    <th scope="col">Quantity</th>
+                    <th scope="col">Price (<span>&#8377;</span>)</th>
+                    <th scope="col">Ordered On</th>
+                    <th scope="col">Bill Amount</th>
+                </tr>
+            </thead>
+            <tbody> {% for card in data['transaction'] %} <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ card['name'] }}</td>
+                    <td>{{ card['seller'] }}</td>
+                    <td>{{ card['quantity'] }} {{ card['type'] }}</td>
+                    <td>{{ card['cost'] }}</td>
+                    <td>{{ card['transaction_date'] }}</td>
+                    <td><span>&#8377;</span> {{ card['quantity']*card['cost'] }}</td>
+                </tr> {% endfor %} <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><strong>Total Cost:</strong></td>
+                    <td><span>&#8377;</span> <strong>{{ data['total'] }}</strong></td>
+                </tr>
+            </tbody>
+        </table>
+        <p><span></span> Thanks {{ data['username'] }}, for being our loyal customer...</p> {% else %} <p><span><i style="font-size: 1.5em;"></i></span> No transaction this month..</p> {% endif %} <br>
+        <p><strong> Best wishes, <br> Admin, OPS Mart </strong> <br><br> P.S. Did you know? Every purchase helps us support a cause close to our hearts. Thank you for making a difference! 💙 </p>
+    </div>
+</body>
+
+</html>

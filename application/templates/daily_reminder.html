@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-C6RzsynM9kWDrMNeT87bh95OGNyZPhcTNXj1NW7RuBCsyN/o0jlpcV8Qyq46cDfL" crossorigin="anonymous"></script>
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.3/font/bootstrap-icons.css">
+        <title>OPS Mart Month Bill</title>
+</head>
+
+<body>
+        <div class="container my-2 p-4 border bg-dark text-white">
+                <h1><i class="bi bi-bag-heart text-danger"></i> OPS Mart</h1>
+        </div>
+        <div class="container my-2 p-5 border">
+                {% if cart|length > 0 %} 
+                <p class="card-text"><span class="text-bolder">Hello {{ username }}</span>, <br><br> We hope you're having a fantastic day! 🌈 Your shopping cart is eagerly awaiting your attention. We found you have added fantastic products as listed below into your cart, but unfortunatly could not buy 🛒. Don't let these fantastic finds slip away.</p>
+                <div class="px-5">
+                        
+                <table class="table p-4 table-hover  ">
+                        <thead class="text-center">
+                                <tr>
+                                        <th scope="col">#</th>
+                                        <th scope="col">Name</th>
+                                        <th scope="col">Seller</th>
+                                        <th scope="col">Quantity</th>
+                                        <th scope="col">Price</th>
+                                </tr>
+                        </thead>
+                        <tbody class="text-center"> 
+                                {% for card in cart %} 
+                                <tr>
+                                        <td>{{ loop.index }}</td>
+                                        <td>{{ card['name'] }}</td>
+                                        <td>{{ card['seller'] }}</td>
+                                        <td>{{ card['quantity'] }} {{ card['type'] }}</td>
+                                        <td><span>&#8377;</span> {{ card['cost'] }}</td>
+                                </tr> 
+                                {% endfor %} 
+                        </tbody>
+                </table></div>
+        
+                <p> Please revisit your cart and complete your purchase. 🚀 Pro tip: Act fast before these goodies run out of stock! Happy shopping! <br><br></p>
+                {% else %}         
+                
+                <p>
+                        <span class="text-bolder">Hello {{ username }}</span>,
+                        <br><br>
+                        We hope you're having a fantastic day! 🌈 It seems like it's been a while since you {% if isBought %}last buy on {{ date }}<sup>th</sup> {{ month }} {{ year }} {% else %} are connected with OPS Mart {% endif %}. Your account is brimming with exciting finds. 🎁 Why not explore our latest arrivals and add some joy to your cart 🛒 today?
+                        <br>
+                        We can't wait to welcome you back!
+                        <br><br>
+                </p>
+                {% endif %}
+                <p><span class="fw-bolder"> Best wishes, <br> Admin, OPS Mart </span> <br><br> P.S. Did you know? Every purchase helps us support a cause close to our hearts. Thank you for making a difference! 💙 </p>
+                
+                
+        </div> 
+        <div class="container my-2 p-4 border bg-dark text-white">
+                <br>
+        </div>
+</body>
+
+</html>

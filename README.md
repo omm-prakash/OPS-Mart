@@ -10,7 +10,7 @@ This repository contains the source code for a E-Commerse application. The appli
 - [Database ER Diagram](#database-er-diagram)
 - [Project Directory](#project-directory)
 - [Application Snaps](#application-snaps)
-
+- [References](#references)
 ## Tech
 Some of the major libraries/technologies used for the application. 
 
@@ -186,6 +186,12 @@ go install github.com/mailhog/MailHog@latest
 ![Alt text](snaps/image-10.png)
 
 
+## References
+- MAD II Project Study Resources: https://viva-workflow-z5snvc5h3q-el.a.run.app/student/study_resources
+- MAD II Playlist: https://www.youtube.com/playlist?list=PLMO2LgIT9_Cfa123DfskneR_zQ4LGAk90
+- Vue Js Documentation: https://vuejs.org/guide/introduction.html
+- Clerly: https://docs.celeryq.dev/en/stable/
+- Flask Documentations
 
 For more details or any clarifications please feel free to contact me @ 21f1005497@ds.study.iitm.ac.in.
 

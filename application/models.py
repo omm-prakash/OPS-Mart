@@ -13,11 +13,6 @@ class RoleUser(db.Model):
         role_id = db.Column(db.Integer(),db.ForeignKey('role.id'))
 
 
-
-# categories_users = db.Table('categories_users',
-#                             db.Column('user_id',db.Integer(),db.ForeignKey('user.id')),
-#                             db.Column('category_id',db.Integer(),db.ForeignKey('category.id')))
-
 class User(db.Model, UserMixin):
         __tablename__='user'
         id = db.Column(db.Integer, primary_key=True)
@@ -32,21 +27,12 @@ class User(db.Model, UserMixin):
         products = db.relationship('Product', 
                                    secondary='products_users',
                                    backref=db.backref('users', lazy='dynamic'))
-        # categories = db.relationship('Category', 
-        #                              secondary='categories_users',
-        #                              backref=db.backref('users', lazy='dynamic'))
 
 class Role(db.Model, RoleMixin):
         __tablename__='role'
         id = db.Column(db.Integer, primary_key=True)
         name = db.Column(db.String(80), unique=True)
         description = db.Column(db.String(255))
-
-# products_users = db.Table('products_users',
-#                           db.Column('product_id',db.Integer(),db.ForeignKey('product.id')),
-#                           db.Column('user_id',db.Integer(),db.ForeignKey('user.id')),
-#                           db.Column('rating',db.Integer()),
-#                           db.Column('quantity', db.Float(), nullable=False))
 
 # customer transaction
 class ProductUser(db.Model):

@@ -23,11 +23,6 @@ def user_login():
         data = request.get_json()
         email = data.get('email')
         password = data.get('password')
-        # user = User.query.get(1)
-        # print("Last Login:", user.last_login_at)
-        # print("Current Login:", user.current_login_at)
-        # print("Login Count:", user.login_count)
-
         if not email:
                 return jsonify({'message': 'Error: Email not provided!!'}), 400
         if not password:
@@ -86,9 +81,8 @@ def user_register():
 @auth_required('token')
 @roles_required('customer')
 def add_to_cart(product_id, quantity=1):
-        # print('I am here')
-        if product_id==1:
-                return jsonify({'message': 'Error: Base product can not be added to cart!!'}), 404
+        # if product_id==1:
+        #         return jsonify({'message': 'Error: Base product can not be added to cart!!'}), 404
         if product_id<1:
                 return jsonify({'message': 'Error: Invalide product ID!!'}), 404
         products = Product.query.all()
@@ -124,8 +118,8 @@ def add_to_cart(product_id, quantity=1):
 @auth_required('token')
 @roles_required('customer')
 def remove_from_cart(product_id):
-        if product_id==1:
-                return jsonify({'message': 'Error: Base product can not removed!!'}), 404
+        # if product_id==1:
+        #         return jsonify({'message': 'Error: Base product can not removed!!'}), 404
         if product_id<1:
                 return jsonify({'message': 'Error: Invalide product ID!!'}), 404
 
@@ -154,8 +148,8 @@ def remove_from_cart(product_id):
 @auth_required('token')
 @roles_required('customer')
 def delete_cart(product_id):
-        if product_id==1:
-                return jsonify({'message': 'Error: Base product can not deleted!!'}), 404
+        # if product_id==1:
+        #         return jsonify({'message': 'Error: Base product can not deleted!!'}), 404
         if product_id<1:
                 return jsonify({'message': 'Error: Invalide product ID!!'}), 404
 
@@ -184,7 +178,6 @@ def buy_product():
         data = request.get_json()
         id = data.get('id')
         card = ProductUser.query.get(id)
-        # print(card)
         if card is None:
                 return jsonify({'message': 'Error: Transaction failed!!'}), 404
         if card.user_id!=current_user.id:
@@ -205,36 +198,8 @@ def buy_product():
         try:
                 db.session.commit()
         except Exception as e:
-                # print(e)
                 return jsonify({'message': 'Error: Unknown server error!!'}), 500
         return jsonify({'message': f'Success: Transaction completed!!'}), 201
-
-
-
-        # for id in data.get('ids'):
-        #         with db.session.begin():
-        #                 start = time.time()
-        #                 card = ProductUser.query.get(id)
-        #                 if not card:
-        #                         return jsonify({'message': 'Error: Transaction failed!!'}), 404
-        #                 if card.user_id!=3:#current_user.id:
-        #                         return jsonify({'message': 'Error: Invalid access!!'}), 403
-        #                 if card.commit:
-        #                         return jsonify({'message': 'Error: Transacetion already complete!!'}), 404
-        #                 current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
-        #                 card.commit = True
-        #                 card.transaction_date = current_time
-        #                 db.session.commit()
-        #         time.sleep(5)
-                        # break
-        # try:
-        #         db.session.commit()
-        # except Exception as e:
-        #         print(e)
-        #         return jsonify({'message': 'Error: Unknown server error!!'}), 500
-                        # break
-        # print(time.time()-start)
-        # return jsonify({'message': f'Success: Transaction completed!!'}), 201
 
 class CategoryField(fields.Raw):
         def format(self, category):
@@ -279,32 +244,20 @@ card_fields = {
 @app.get('/customer/cart/get')
 @auth_required('token')
 @roles_required('customer')
-# @cache.cached(timeout=240)
 def get_cart():
         cards = ProductUser.query.filter_by(user_id=current_user.id, commit=False).all()
-        # if not cards:
-        #         return jsonify({'message': 'Error: No product in cart!!'}), 404
         return marshal(cards, card_fields)
 
 @app.get('/customer/transactions')
 @auth_required('token')
-# @roles_required('customer')
-# @cache.cached(timeout=120)
 def old_transaction():
         if 'manager' in current_user.roles:
                 product_ids = list(map(lambda x: x.id, Product.query.filter_by(manager_id=current_user.id).all()))
                 cards = ProductUser.query.filter(and_(ProductUser.product_id.in_(product_ids), ProductUser.commit==True)).all()
-                # if not cards:
-                #         return jsonify({'message': 'Error: No product sold!!'}), 404
         elif 'customer' in current_user.roles:
                 cards = ProductUser.query.filter_by(user_id=current_user.id, commit=True).all()
-                # if not cards:
-                #         return jsonify({'message': 'Error: No product bought!!'}), 404
         else:        
-                print('I am here')
                 cards = ProductUser.query.filter_by(commit=True).all()
-                # if not cards:
-                #         return jsonify({'message': 'Error: Transaction chart empty!!'}), 404
         return marshal(cards, card_fields)
 
 
@@ -318,7 +271,7 @@ category_fields = {
 }
 @app.get('/get/category')
 @auth_required('token')
-# @cache.cached(timeout=120)
+@cache.cached(timeout=300)
 def category():
         roles = list(map(lambda x: x.name, current_user.roles))
         if 'manager' in roles:
@@ -329,7 +282,6 @@ def category():
                 categories = Category.query.filter(Category.active==True).all()
         else:
                 return jsonify({'message': 'Error: Method not allowed!!'}), 400
-        # print(categories)
         if len(categories)==0:
                 return jsonify({'message': 'Error: No category found!!'}), 400
         else:
@@ -426,11 +378,8 @@ product_fields = {
         'manager': ManagerField
 }
 @app.get('/get/products')
-# @cache.cached(timeout=60)
 def fetch_products():
-        # products = Product.query.filter(Product.id==1)
         products = Product.query.join(Category).filter(Category.active == True).all()
-        # print(products)
         return marshal(products,product_fields)
 
 ################################################ Admin ######################################################
@@ -454,7 +403,6 @@ user_fields = {
 @roles_required('admin')
 def admin():
         admin = User.query.filter(User.roles.any(Role.name == 'admin')).first()
-        # print(current_user.roles)
         return marshal(admin, user_fields)
 
 @app.get('/activate/manager/<int:manager_id>')
@@ -542,28 +490,11 @@ def deactivate_category(id):
 
 
 
-
-# @app.get('/download-csv')
-# @auth_required('token')
-# def download_csv():
-        # task = create_resource_csv.apply_async(args=[marshal(current_user, user_fields)])
-        # return jsonify({"task-id": task.id})
-
-
-@app.get('/get-csv/<task_id>')
-@auth_required('token')
-def get_csv(task_id):
-    res = AsyncResult(task_id)
-    if res.ready():
-        filename = res.result
-        # print(filename)
-        return send_file(filename, as_attachment=True)
-    else:
-        return jsonify({"message": "Task Pending"}), 404
-    
+# create_transaction_csv    
 @app.get('/manager/get/transaction/report')
 @auth_required('token')
 @roles_required('manager')
+@cache.cached(timeout=120)
 def get_transaction_report():
         task = create_transaction_csv.apply_async(args=[marshal(current_user, user_fields)])
         return jsonify({"task-id": task.id})
@@ -579,8 +510,6 @@ def get_product_report():
 
 @app.get('/manager/download/product/report/<task_id>')
 @app.get('/manager/download/transaction/report/<task_id>')
-# @auth_required('token')
-# @roles_required('manager')
 def send_transaction_report(task_id):
     res = AsyncResult(task_id)
     if res.ready():
@@ -589,21 +518,7 @@ def send_transaction_report(task_id):
     else:
         return jsonify({"message": "Task Pending"}), 404
 
-
-# @app.get('/manager/download/product/report/<task_id>')
-# # @auth_required('token')
-# # @roles_required('manager')
-# def send_product_report(task_id):
-#     res = AsyncResult(task_id)
-#     if res.ready():
-#         filename = res.result
-#         print(filename)
-#         # print(filename,'is prepared!!')
-#         filename='customer_transaction.pdf'
-#         return send_file(filename, as_attachment=True)
-#     else:
-#         return jsonify({"message": "Task Pending"}), 404
-
+####################################################### customer recipt/report generation #####################
 
 @app.get('/customer/get/transaction/report/<file>')
 @auth_required('token')
@@ -617,6 +532,7 @@ def get_transaction_report_pdf(file):
         transaction = []
         total = 0
         data = {}
+        data['date'] = current_time.strftime('%d') 
         data['email'] = current_user.email
         data['username'] = current_user.username
         data['month'] = month
@@ -642,7 +558,6 @@ def get_transaction_report_pdf(file):
         data['total'] = total
         file_ = 'application/templates/this_month_transaction.html'
         hash = generate_password_hash(current_user.password)
-        # print(file)
         if file=='pdf':
                 output_file = f'buffer/{hash}.pdf'
                 print(output_file)
@@ -663,7 +578,6 @@ def send_transaction_report_pdf(file, doc_id):
                 output_file = f'buffer/{doc_id}.html'
         else:
                 return jsonify({"message": "Invalid file type."}), 404
-        # print('PDF request:',output_file)
         if os.path.exists(output_file):
                 doc = send_file(output_file, as_attachment=True, download_name='ops_mart-recipt.'+file)
                 return doc

@@ -65,22 +65,21 @@ category_fields = {
 class CategoryResource(Resource):
         @auth_required('token')
         @roles_required('admin')
-        # @cache.cached(timeout=120)
         def get(self, id):
                 try:
                         if id==0:
                                 categories = Category.query.all()
                                 # print(categories)
                                 return marshal(categories,category_fields)
-                        elif id==1:
-                                category = Category.query.get(id)
-                                return category
+                        # elif id==1:
+                        #         category = Category.query.get(id)
+                        #         return category
+                        # else:
+                        category = Category.query.get(id)
+                        if category:
+                                return marshal(categories,category_fields)
                         else:
-                                category = Category.query.get(id)
-                                if category:
-                                        return marshal(categories,category_fields)
-                                else:
-                                        return jsonify({'message': 'Error: Category does not exist!!'}), 404
+                                return jsonify({'message': 'Error: Category does not exist!!'}), 404
                 except:
                         return jsonify({'message': 'Error: Unknown error occure!!'}), 500
         
@@ -119,8 +118,8 @@ class CategoryResource(Resource):
                 categories = Category.query.all()
                 ids = list(map(lambda x: x.id,categories)) 
                 
-                if id==1:
-                        return make_response(jsonify({'message': 'Error: Global category can not be deleted!!'}), 405)
+                # if id==1:
+                #         return make_response(jsonify({'message': 'Error: Global category can not be deleted!!'}), 405)
                 if id not in ids:
                         return make_response(jsonify({'message': 'Error: Category does not exists!!'}), 404)
                 try:
@@ -140,9 +139,9 @@ class CategoryResource(Resource):
                 categories = Category.query.all()
                 category = Category.query.get(args['id'])
                 ids = list(map(lambda x: x.id,categories)) 
-                # print(args)
-                if args['id']==1:
-                        return make_response(jsonify({'message': 'Error: Global category can not be updated!!'}), 405)
+                
+                # if args['id']==1:
+                #         return make_response(jsonify({'message': 'Error: Global category can not be updated!!'}), 405)
                 if args['id'] not in ids:
                         return make_response(jsonify({'message': 'Error: Category does not exists!!'}), 404)
                 if args['name'] is None or args['name']=='':
@@ -205,7 +204,6 @@ product_fields = {
 class ProductResource(Resource):
         @auth_required('token')
         @roles_required('manager')
-        # @cache.cached(timeout=2)
         def get(self):
                 try:
                         manager_id = current_user.id
@@ -232,7 +230,8 @@ class ProductResource(Resource):
                         return make_response(jsonify({'message': 'Error: Product stock can not be negative!!'}), 404)
                 if args['type'] is not None and args['type'] not in ['ltr','kg','unit']:
                         return make_response(jsonify({'message': 'Error: Product type should among ltr/kg/unit!!'}), 404)
-                if args['category_id'] is not None and args['category_id'] != 1 and args['category_id'] not in category_ids:
+                # if args['category_id'] is not None and args['category_id'] != 1 and args['category_id'] not in category_ids:
+                if args['category_id'] is not None and args['category_id'] not in category_ids:
                         return make_response(jsonify({'message': 'Error: Product category not exists!!'}), 404)
                 current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
                 if args['manufacture_date'] is not None:
@@ -273,8 +272,8 @@ class ProductResource(Resource):
         def delete(self,id):
                 products = Product.query.all()
                 ids = list(map(lambda x: x.id,products)) 
-                if id==1:
-                        return make_response(jsonify({'message': 'Error: Base product can not be deleted!!'}), 405)
+                # if id==1:
+                #         return make_response(jsonify({'message': 'Error: Base product can not be deleted!!'}), 405)
                 if id not in ids:
                         return make_response(jsonify({'message': 'Error: Product does not exists!!'}), 404)
                 product = Product.query.get(id)
@@ -300,8 +299,8 @@ class ProductResource(Resource):
                 ids = list(map(lambda x: x.id,products)) 
                 category_ids = list(map(lambda x: x.id,Category.query.all()))
                 
-                if args['id']==1:
-                        return make_response(jsonify({'message': 'Error: Base product can not be updated!!'}), 405)
+                # if args['id']==1:
+                #         return make_response(jsonify({'message': 'Error: Base product can not be updated!!'}), 405)
                 if args['id'] not in ids:
                         return make_response(jsonify({'message': 'Error: Product does not exists!!'}), 404)
                 if product.manager_id != current_user.id:
@@ -310,8 +309,6 @@ class ProductResource(Resource):
                 
                 if args['name'] is not None and args['name']=='':
                         message += ', Warning: Please add product name!!'
-                # if args['id']<0:
-                #         return {'message': 'Error: Product ID can not be negative!!'}, 404
                 if args['cost'] is not None and args['cost']<0:
                         return make_response(jsonify({'message': 'Error: Product cost can not be negative!!'}), 404)
                 if args['stock'] is not None and args['stock']<0:
@@ -320,7 +317,8 @@ class ProductResource(Resource):
                         return make_response(jsonify({'message': 'Error: Product type should among ltr/kg/unit!!'}), 404)
                 # if args['manager_id']<0:
                 #         return {'message': 'Error: Manager ID can not be negative!!'}, 404
-                if args['category_id'] != 1 and args['category_id'] not in category_ids:
+                # if args['category_id'] != 1 and args['category_id'] not in category_ids:
+                if args['category_id'] not in category_ids:
                         return make_response(jsonify({'message': 'Error: Product category not exists!!'}), 404)
                 
                 # datatime handle

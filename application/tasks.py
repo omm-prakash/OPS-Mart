@@ -2,14 +2,12 @@ from celery import shared_task
 from .models import User
 from sqlalchemy import or_, and_
 import flask_excel as excel
-# from .mail_service import send_message
 from .models import User, Role, ProductUser, Product, db
 from jinja2 import Template
 from .service import send_message, create_pdf_report
 import os
 from datetime import datetime, timedelta
 import pytz
-# from flask_security import current_user, auth_required
 
 
 # CSV file generation
@@ -42,8 +40,6 @@ def create_transaction_csv(user=None):
                         data['bill_amount'].append(product.cost*card.quantity)
         
         response = excel.make_response_from_dict(data, file_type='csv')
-
-        # csv_output = excel.make_response_from_query_sets(commited_cards, ['id','username','email'], "csv")
         filename = "buffer/transaction_report.csv"
 
         with open(filename, 'wb') as f:
@@ -63,7 +59,6 @@ def create_product_csv(user=None):
                                                                                 Product.onboard_date, 
                                                                                 Product.category_id
                                                                                 ).all()
-        # response = excel.make_response_from_dict(data, file_type='csv')
         cols = ['id','name','cost', 'stock', 'type', 'manufacture_date', 'expiry_date', 'onboard_date', 'category_id']
         response = excel.make_response_from_query_sets(products, cols, "csv")
         filename = "buffer/product_report.csv"
@@ -72,48 +67,6 @@ def create_product_csv(user=None):
                 f.write(response.data)
 
         return filename
-
-
-# @shared_task(ignore_result=False)
-# def customer_month_transactions_pdf(user=None):
-#         results = db.session.query(ProductUser, Product).join(Product, Product.id == ProductUser.product_id).all()
-#         current_time = datetime.now(pytz.timezone('Asia/Kolkata'))
-#         # last_month_date = current_time - timedelta(days=2)
-#         month = current_time.strftime('%B') 
-#         year = current_time.strftime('%Y')
-        
-#         transaction = []
-#         total = 0
-#         data = {}
-#         data['email'] = user['email']
-#         data['username'] = user['username']
-#         data['month'] = month
-#         data['year'] = year
-#         for (card,product) in results:
-#                 cardData = {}
-#                 transaction_date = card.transaction_date
-#                 if transaction_date:
-#                         transaction_date = pytz.timezone('Asia/Kolkata').localize(transaction_date)
-#                         del_time = current_time-transaction_date
-#                 if card.user_id==user['id'] and card.commit and del_time <= timedelta(days=int(current_time.day)):
-#                         manager = User.query.get(product.manager_id)
-#                         cardData['name'] = product.name
-#                         cardData['seller'] = manager.username
-#                         cardData['quantity'] = card.quantity
-#                         cardData['type'] = product.type
-#                         cardData['cost'] = product.cost
-#                         cardData['transaction_date'] = card.transaction_date.strftime("%Y-%m-%d %H:%M")
-#                         total += product.cost*card.quantity
-#                         transaction.append(cardData)
-                
-#         data['transaction'] = transaction
-#         data['total'] = total
-#         file = 'application/templates/this_month_transaction.html'
-#         output_file = 'customer_transaction.pdf'
-#         create_pdf_report(file=file, data=data, output_file=output_file)
-#         # print(data)
-#         return output_file 
-
 
 # email
 

@@ -1,5 +1,5 @@
 # OPS Mart
-This repository contains the source code for a E-Commerse application. The application is built using Flask for backend and Vue JS for frontend. The app is a comprehensive multi-user platform designed for efficient grocery shopping. Users can sign up, buy products across various categories, and enjoy role-based access control. With features like category and product management, background jobs, reporting, and alert functionalities, the app ensures a seamless and secure experience for customers, administrators, and store managers alike.
+This repository contains the source code for an E-commerce application. The application is built using Flask for the backend and Vue JS for front end. The app is a comprehensive multi-user platform designed for efficient grocery shopping. Users can sign up, buy products across various categories, and enjoy role-based access control. With features like category and product management, background jobs, reporting, and alert functionalities, the app ensures a seamless and secure experience for customers, administrators, and store managers alike.
 
 ## Table of Contents
 - [Tech](#tech)
@@ -169,7 +169,7 @@ go install github.com/mailhog/MailHog@latest
 ![image-6](https://github.com/omm-prakash/OPS-Mart/assets/76400354/55484a8d-5196-4029-bd8a-fedd1d3baf88)
 
 ### Admin: Category Page
-![Uploading image-7.png…]()
+![image-7](https://github.com/omm-prakash/OPS-Mart/assets/76400354/d8e2a9cc-2dea-448b-80fa-e53c334730d6)
 
 ### Admin: Manager Approval Page
 ![image-8](https://github.com/omm-prakash/OPS-Mart/assets/76400354/6ba9f268-0a5f-44ca-8917-4e973d6819d9)
@@ -194,8 +194,7 @@ go install github.com/mailhog/MailHog@latest
 - Clerly: https://docs.celeryq.dev/en/stable/
 - Flask Documentations
 
-For more details or any clarifications please feel free to contact me @ 21f1005497@ds.study.iitm.ac.in.
+For more details or any clarifications, please feel free to contact me @ 21f1005497@ds.study.iitm.ac.in.
 
-Best Regards,<br>
-Omm Prakash Sahoo<br>
-21f1005497
+Thank You,<br>
+Omm Prakash Sahoo

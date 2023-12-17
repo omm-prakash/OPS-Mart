@@ -150,11 +150,13 @@ go install github.com/mailhog/MailHog@latest
 ## Application Snaps
 
 ### User Landing Page
-![landing page](snaps/image.png)
+![image](https://github.com/omm-prakash/OPS-Mart/assets/76400354/c446ed8f-f3d5-4895-a0d2-71d4d7a2be24)
+
 
 ### SignIn Page
-![Alt text](snaps/image-1.png)
-  
+![Alt text](https://github.com/omm-prakash/OPS-Mart/snaps/image-1.png)
+
+
 ### SignUp Page
 ![Alt text](snaps/image-2.png)
 

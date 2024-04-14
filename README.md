@@ -194,7 +194,7 @@ go install github.com/mailhog/MailHog@latest
 - Clerly: https://docs.celeryq.dev/en/stable/
 - Flask Documentations
 
-For more details or any clarifications, please feel free to contact me @ 21f1005497@ds.study.iitm.ac.in.
+For more details or any clarifications, please feel free to contact me @ommprakash2568@gmail.com.
 
 Thank You,<br>
 Omm Prakash Sahoo

@@ -1,5 +1,5 @@
 # OPS Mart
-This repository contains the source code for an E-commerce application. The application is built using Flask for the backend and Vue JS for front end. The app is a comprehensive multi-user platform designed for efficient grocery shopping. Users can sign up, buy products across various categories, and enjoy role-based access control. With features like category and product management, background jobs, reporting, and alert functionalities, the app ensures a seamless and secure experience for customers, administrators, and store managers alike.
+This repository contains the source code for an E-commerce application. The application is built using Flask for the backend and Vue JS for the front end. The app is a comprehensive multi-user platform designed for efficient grocery shopping. Users can sign up, buy products across various categories, and enjoy role-based access control. With features like category and product management, background jobs, reporting, and alert functionalities, the app ensures a seamless and secure experience for customers, administrators, and store managers alike.
 
 ## Table of Contents
 - [Tech](#tech)
@@ -30,9 +30,9 @@ Some of the major libraries/technologies used for the application.
 
 #### Prerequisites
 
-First make sure you have [Conda](https://docs.conda.io/en/latest/) installed on your system. Neither you may setup your environment using pip. 
+First, make sure you have [Conda](https://docs.conda.io/en/latest/) installed on your system. You may setup your environment using pip. 
 
-##### Create Conda Environment
+##### Create a Conda Environment
 Use the provided `environment.yml` file to create a Conda environment named "grocery".
 ```bash
 conda env create -f environment.yml
@@ -80,7 +80,7 @@ go install github.com/mailhog/MailHog@latest
 
 1. **User:** Regular users who can purchase groceries.
 2. **Admin:** Administrators with elevated privileges for system management.
-3. **Store Manager:** Manage products, request new sections, and oversee category additions.
+3. **Store Manager:** Manage products, request new sections and oversee category additions.
 
 ## Functionality
 
@@ -89,7 +89,7 @@ go install github.com/mailhog/MailHog@latest
   - Manage product details, including ID, name, manufacturing/expiry date, and rate per unit.
 
 - **User Operations:**
-  - Sign up and log in securely based on RBAC.
+  - Sign up and login securely based on RBAC.
   - Purchase products from one or multiple categories.
 
 - **Store Manager Operations:**
